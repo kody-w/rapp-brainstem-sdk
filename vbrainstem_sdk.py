@@ -9,17 +9,21 @@ real network + filesystem), so agents that need sockets or os.environ secrets
 work here even though they can't in the browser sandbox.
 
 CLI:
-    python3 vbrainstem_sdk.py serve [--port 7077] [--registry URL|PATH]
+    python3 vbrainstem_sdk.py serve [--port 7173] [--registry URL|PATH]
     python3 vbrainstem_sdk.py agents [--grep TEXT]
     python3 vbrainstem_sdk.py run <slug> "<request>"   [--arg k=v ...]
     python3 vbrainstem_sdk.py eval "<python code>"
+    python3 vbrainstem_sdk.py chat "<message>" [--model M] [--agents slug,slug] [--registry URL|PATH]
 
-HTTP API (brainstem-style; CORS-enabled so a browser or the rapp-brainstem
-skill or `curl` or an agent can drive it):
+HTTP API (brainstem-style; CORS-enabled so a browser, the rapp-brainstem
+skill, `curl`, an agent, or any MCP client can drive it — all Layer-2 callers
+of the one wire /chat):
     GET  /health                      -> {status, agents, runtime, registry}
     GET  /agents[?grep=]              -> {agents:[{name,display_name,...}]}
-    POST /run    {slug|agent, request, args?}  -> {slug, executed, output|error}
+    POST /run    {slug|agent, request, args?}  -> {executed, output|error, ran_class, agent, slug}
     POST /eval   {code}              -> {output}
+    POST /chat   {user_input, conversation_history?, session_id?, model?, agents?}
+                                      -> {response, session_id, agent_logs, voice_mode}
 
 Secrets: set them in the process environment (export OPENAI_API_KEY=… before
 serving, or pass via a .env-style export); agents read them via os.environ.
@@ -393,6 +397,8 @@ def chat(user_input, token, conversation_history=None, session_id=None, model=No
                 result = json.dumps(result, default=str)
             logs.append(f"[{fn}] {result}")
             messages.append({"role": "tool", "tool_call_id": tc.get("id"), "content": result})
+    # voice_mode is intentionally pinned False here: the headless SDK has no voice surface,
+    # unlike brainstem.py where it mirrors the env-driven VOICE_MODE knob.
     return {"response": msg.get("content") or "", "session_id": session_id,
             "agent_logs": "\n".join(logs), "voice_mode": False}
 
@@ -477,7 +483,7 @@ def serve(port: int, registry: str | None):
         print(f"vbrainstem_sdk: cannot bind port {port} ({e}). Another server (a brainstem?) is there — try --port <other>.", file=sys.stderr)
         sys.exit(1)
     print(f"vbrainstem_sdk: CPython {sys.version.split()[0]} | {len(reg.get('agents', []))} agents | http://localhost:{port}")
-    print(f"  GET /health  GET /agents  POST /run {{slug,request}}  POST /eval {{code}}  POST /chat {{message}}")
+    print(f"  GET /health  GET /agents  POST /run {{slug,request}}  POST /eval {{code}}  POST /chat {{user_input}}")
     httpd.serve_forever()
 
 
