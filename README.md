@@ -1,5 +1,9 @@
 # rapp-brainstem-sdk
 
+<!-- rapp1:network-header:start -->
+[![RAPP/1](https://kody-w.github.io/rapp-hive-public/portfolio/badges/rapp-brainstem-sdk.svg)](https://github.com/kody-w/rapp-hive-public/blob/main/portfolio/repos/rapp-brainstem-sdk.md) · **New to RAPP?** [Start here: get your Brainstem →](https://github.com/kody-w/rapp-installer#start-here)
+<!-- rapp1:network-header:end -->
+
 `vbrainstem_sdk.py` — a single‑file, **stdlib‑only** headless SDK that runs RAPP single‑file agents
 in real CPython and serves the **`brainstem.py` `/chat` contract** over a port. The headless twin of
 the browser [vBrainstem](https://github.com/kody-w/vbrainstem): same agents, same contract, no
