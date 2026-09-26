@@ -11,7 +11,7 @@ browser — so `curl`, a skill, an agent, CI, or any MCP client can drive a brai
 
 Everything reaches the brainstem through the one wire (`/chat` — "Chat Is The Only Wire"); these
 are all Layer-2 callers of it, not new units. MCP is just another transport on that wire:
-[rapp-mcp](https://github.com/kody-w/rapp-mcp) (`rapp_brainstem_mcp.py`, `rapp-mcp-spec/1.0`)
+[rapp-mcp](https://github.com/kody-w/rapp-mcp) (`rapp_brainstem_mcp.py`, `rapp-mcp-spec/2.0`)
 bridges a running brainstem over the full `/chat` (LLM + memory + agents) to any MCP host — the
 transport-layer sibling of this SDK.
 
